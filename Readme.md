@@ -1,1 +1,1 @@
-This is a simple text editor project this project follows the hecto project step by step so this is NOT original please if this seems cool go and also look at the hecto guide here:https://philippflenker.com/hecto-chapter-1/
+This is a simple text editor project this project follows the hecto project step by step so this is NOT original please if this seems cool go and also look at the hecto guide here: https://philippflenker.com/hecto-chapter-1/
