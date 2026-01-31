@@ -9,7 +9,7 @@ pub struct Size {
 pub height: u16,
 pub width: u16,
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Default)]
 pub struct Pos {
 pub x: u16,
 pub y: u16,
@@ -27,7 +27,6 @@ impl Terminal {
     pub fn init() -> Result<(), std::io::Error> {
         enable_raw_mode()?;
         Self::clear_screen()?;
-        Self::move_m(Pos{x:0,y:0})?;
         Ok(())
     }
 

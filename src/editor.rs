@@ -1,5 +1,9 @@
 use core::cmp::min;
-use crossterm::event::{read, Event, Event::Key, KeyCode::Char, KeyEvent, KeyModifiers};
+use crossterm::event::{
+    read, 
+    Event::{self, Key}, 
+    KeyCode, KeyEvent, KeyModifiers, KeyEventKind,
+    };
 mod terminal;
 use terminal::{Terminal, Size, Pos};
 const NAME: &str = env!("CARGO_PKG_NAME");
@@ -8,18 +12,16 @@ const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 #[derive(Copy, Clone, Default)]
 pub struct Location {
-    x: usize,
-    y: usize,
+    x: u16,
+    y: u16,
 }
-
+#[derive(Default)]
 pub struct Editor {
     should_quit: bool,
+    location: Location,
 }
 
 impl Editor {
-    pub const fn default() -> Self {
-        Self { should_quit: false }
-    }
     pub fn run(&mut self) {
         Terminal::init().unwrap();
         let result = self.repl();
@@ -51,7 +53,7 @@ impl Editor {
         }) = event
         {
             match code {
-                Char('q') if *modifiers == KeyModifiers::CONTROL => {
+                KeyCode::Char('q') if *modifiers == KeyModifiers::CONTROL => {
                     self.should_quit = true;
                 }
 
@@ -114,6 +116,59 @@ impl Editor {
 
     fn draw_empty_row() -> Result<(), std::io::Error> {
         Terminal::print("~")?;
+        Ok(())
+    }
+
+    fn movepoint(&mut self, key: KeyCode) -> Result<(), std::io::Error> {
+        let Location {mut x, mut y} = self.location;
+        let Size {height, width} = Terminal::size()?;
+        match key {
+            KeyCode::Up => {
+                if y == 0 {
+                } else {
+                    y+=1;
+                }
+            }
+            KeyCode::Down =>
+            {
+                if y == height {
+                } else {
+                    y-=1;
+                }
+            }
+            KeyCode::Left =>
+            {
+                if x == 0 {
+                } else {
+                    x-=1;
+                }
+            }
+            KeyCode::Right =>
+            {
+                if x == width {
+                } else {
+                    x+=1;
+                }
+            }
+            KeyCode::PageDown =>
+            {
+                y = height;
+            }
+            KeyCode::PageUp =>
+            {
+                y = 0;
+            }
+            KeyCode::End =>
+            {
+                x = width;
+            }
+            KeyCode::Home =>
+            {
+                x = 0;
+            }
+                _ => (),
+        }
+        self.location = Location {x, y};
         Ok(())
     }
 }
