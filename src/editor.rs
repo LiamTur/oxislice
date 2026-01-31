@@ -1,8 +1,16 @@
+use core::cmp::min;
 use crossterm::event::{read, Event, Event::Key, KeyCode::Char, KeyEvent, KeyModifiers};
 mod terminal;
 use terminal::{Terminal, Size, Pos};
 const NAME: &str = env!("CARGO_PKG_NAME");
 const VERSION: &str = env!("CARGO_PKG_VERSION");
+
+
+#[derive(Copy, Clone, Default)]
+pub struct Location {
+    x: usize,
+    y: usize,
+}
 
 pub struct Editor {
     should_quit: bool,
@@ -35,6 +43,8 @@ impl Editor {
         Ok(())
     }
 
+    //move code here
+
     fn evaluate_event(&mut self, event: &Event) {
         if let Key(KeyEvent {
             code, modifiers, ..
@@ -44,7 +54,18 @@ impl Editor {
                 Char('q') if *modifiers == KeyModifiers::CONTROL => {
                     self.should_quit = true;
                 }
-                _ => (),
+
+                    KeyCode::Up
+                    | KeyCode::Down
+                    | KeyCode::Left
+                    | KeyCode::Right
+                    | KeyCode::PageDown
+                    | KeyCode::PageUp
+                    | KeyCode::End
+                    | KeyCode::Home =>{
+                        self.movepoint(*code);
+                }
+                _ => (), // add call to move function
             }
         }
     }
